@@ -34,7 +34,7 @@ bamCoverage_binSize: 100
 # number of reads to downsample .bam files (0 = no downsampling)
 downsample_read_number: 0
 # peak file for generating matrix of read counts
-peaks_to_plot_coverage: ""
+peaks_to_plot_coverage: "resources/HighConfidence_overlapHelaAsynch_qvalueCutoff2_5.bed"
 # bp around peak region center for counting reads
 bp_around_peak_center: 2000
 
