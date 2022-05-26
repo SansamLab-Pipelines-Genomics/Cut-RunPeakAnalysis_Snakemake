@@ -261,7 +261,7 @@ rule computeMatrix:
         "results/logs/snakelogs/downsample_bam.{sample}.log",
     shell:
         """
-        computeMatrix --referencePoint -a {params.bp} -b {params.bp} -S {input.treatment} {input.control} -R {params.peaks} --outFileName {output.matrix} --outFileNameMatrix {output.tab}
+        computeMatrix reference-point --referencePoint 'center' -a {params.bp} -b {params.bp} -S {input.treatment} {input.control} -R {params.peaks} --outFileName {output.matrix} --outFileNameMatrix {output.tab}
         """
 
 rule plotProfile:
