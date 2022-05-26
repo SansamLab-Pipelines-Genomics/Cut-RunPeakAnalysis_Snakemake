@@ -279,5 +279,5 @@ rule plotProfile:
     shell:
         """
         mkdir -p results/profile_plots
-        plotProfile -m {input.matrix} --outFileName {output.png} --perSample
+        plotProfile -m {input.matrix} --outFileName {output.png} --perGroup
         """
