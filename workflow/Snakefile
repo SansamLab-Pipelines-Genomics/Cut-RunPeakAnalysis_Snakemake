@@ -239,7 +239,7 @@ rule computeMatrix:
     input:
         unpack(
             lambda wildcards: {
-                "treatment": f"results/aligned_speciesOfInterest/{cf.make_all_treatments_table(samples_table_w_merged_suffix).loc[wildcards.sample, 'sample']}_{str(config['downsample_read_number'])}.bw",
+                "treatment": f"results/aligned_downsampled_bigwigs/{cf.make_all_treatments_table(samples_table_w_merged_suffix).loc[wildcards.sample, 'sample']}_{str(config['downsample_read_number'])}.bw",
                 "control": f"results/aligned_downsampled_bigwigs/{cf.make_all_treatments_table(samples_table_w_merged_suffix).loc[wildcards.sample, 'Control']}_{str(config['downsample_read_number'])}.bw",
             }
         ),
