@@ -191,7 +191,7 @@ rule get_species_of_interest_reads:
         """
 
 
-rule downsample_bam
+rule downsample_bam:
     input:
         bam="results/aligned_speciesOfInterest/{sample}.bam",
     output:
@@ -235,7 +235,7 @@ rule make_bigwigs_no_spikein:
         bamCoverage -b {input.bam} -o {output.bw} --effectiveGenomeSize {params.gs} --binSize {params.bs} --numberOfProcessors max --verbose --blackListFileName {params.bl} --centerReads
         """
 
-rule computeMatrix
+rule computeMatrix:
     input:
         unpack(
             lambda wildcards: {
@@ -260,7 +260,7 @@ rule computeMatrix
         computeMatrix --referencePoint -a {params.bp} -b {params.bp} -S {input.treatment} {input.control} -R {params.peaks} --outFileName {output.matrix} --outFileNameMatrix {output.tab}
         """
 
-rule plotProfile
+rule plotProfile:
     input:
         matrix=f"results/downsampled_matrix/{{sample}}_{str(config['downsample_read_number'])}.gz",
     output:
