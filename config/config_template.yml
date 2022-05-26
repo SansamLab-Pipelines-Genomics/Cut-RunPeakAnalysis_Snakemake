@@ -31,6 +31,13 @@ macs2_minimum_FDR_cutoff: 0.05
 macs2_broad_minimum_FDR_cutoff: 0.1
 # bamCoverage options
 bamCoverage_binSize: 100
+# number of reads to downsample .bam files (0 = no downsampling)
+downsample_read_number: 0
+# peak file for generating matrix of read counts
+peaks_to_plot_coverage: ""
+# bp around peak region center for counting reads
+bp_around_peak_center: 2000
+
 #################################################################
 ##                     Environment Modules                     ##
 #################################################################
