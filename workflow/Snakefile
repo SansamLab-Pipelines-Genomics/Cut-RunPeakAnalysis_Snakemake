@@ -195,7 +195,7 @@ rule downsample_bam:
     input:
         bam="results/aligned_speciesOfInterest/{sample}.bam",
     output:
-        bam="results/aligned_downsampled/{sample}_{config["downsample_read_number"]}.bam",
+        bam="results/aligned_downsampled/{sample}_{config['downsample_read_number']}.bam",
     params:
         ds_num=config["downsample_read_number"],
     conda:
@@ -216,9 +216,9 @@ rule downsample_bam:
 
 rule make_bigwigs_no_spikein:
     input:
-        bam="results/aligned_downsampled/{sample}_{config["downsample_read_number"]}.bam",
+        bam="results/aligned_downsampled/{sample}_{config['downsample_read_number']}.bam",
     output:
-        bw="results/aligned_downsampled_bigwigs/{sample}_{config["downsample_read_number"]}.bw",
+        bw="results/aligned_downsampled_bigwigs/{sample}_{config['downsample_read_number']}.bw",
     params:
         gs=config["effective_genome_size"],
         bs=config["bamCoverage_binSize"],
