@@ -277,5 +277,5 @@ rule plotProfile:
         "results/logs/snakelogs/downsample_bam.{sample}.log",
     shell:
         """
-        plotProfile -m {input.matrix} --outFileName {output.png}
+        plotProfile -m {input.matrix} --outFileName {output.png} --perSample
         """
