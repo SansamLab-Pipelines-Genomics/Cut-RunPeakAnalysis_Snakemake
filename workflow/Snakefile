@@ -34,7 +34,6 @@ rule all:
             ].to_list(),
         ),
         
-
         
 rule trim_reads_with_trimmomatic:
     input:
@@ -165,35 +164,9 @@ rule merge_replicates:
         samtools index {output.bam}
         """
 
-
-rule get_species_of_interest_reads:
-    input:
-        bam="results/aligned_and_filtered/{sample}.bam",
-    output:
-        bam="results/aligned_speciesOfInterest/{sample}.bam",
-    params:
-        chromosomeSizes=f"resources/chromosome_sizes/{str(config['genome_of_interest'])}.chrom.sizes",
-        bowtie2_samtools_threads=config["bowtie2_samtools_threads"],
-    conda:
-        "envs/samtools.yml"
-    envmodules:
-        config["samtools"]
-    log:
-        "results/logs/snakelogs/get_species_of_interest_reads.{sample}.log",
-    shell:
-        """
-        awk -F '\t' '{{ print $1,"1",$2 }}' OFS='\t' {params.chromosomeSizes} > {output.bam}tmp.bed
-        samtools view --threads {params.bowtie2_samtools_threads} -bS -ML {output.bam}tmp.bed {input.bam} > {output.bam}
-        samtools index {output.bam}
-        echo "Number of species-of-interest reads:" > {log}
-        samtools view --threads {params.bowtie2_samtools_threads} -c {output.bam} >> {log}
-        rm {output.bam}tmp.bed
-        """
-
-
 rule downsample_bam:
     input:
-        bam="results/aligned_speciesOfInterest/{sample}.bam",
+        bam="results/aligned_and_filtered/{sample}.bam",
     output:
         bam=f"results/aligned_downsampled/{{sample}}_{str(config['downsample_read_number'])}.bam",
         bai=f"results/aligned_downsampled/{{sample}}_{str(config['downsample_read_number'])}.bam.bai",
@@ -216,10 +189,34 @@ rule downsample_bam:
         samtools index {output.bam}
         """
 
-rule make_bigwigs_no_spikein:
+rule get_species_of_interest_reads:
     input:
         bam=f"results/aligned_downsampled/{{sample}}_{str(config['downsample_read_number'])}.bam",
-        bai=f"results/aligned_downsampled/{{sample}}_{str(config['downsample_read_number'])}.bam.bai",
+    output:
+        bam=f"results/aligned_speciesOfInterest/{{sample}}_{str(config['downsample_read_number'])}.bam",
+    params:
+        chromosomeSizes=f"resources/chromosome_sizes/{str(config['genome_of_interest'])}.chrom.sizes",
+        bowtie2_samtools_threads=config["bowtie2_samtools_threads"],
+    conda:
+        "envs/samtools.yml"
+    envmodules:
+        config["samtools"]
+    log:
+        "results/logs/snakelogs/get_species_of_interest_reads.{sample}.log",
+    shell:
+        """
+        awk -F '\t' '{{ print $1,"1",$2 }}' OFS='\t' {params.chromosomeSizes} > {output.bam}tmp.bed
+        samtools view --threads {params.bowtie2_samtools_threads} -bS -ML {output.bam}tmp.bed {input.bam} > {output.bam}
+        samtools index {output.bam}
+        echo "Number of species-of-interest reads:" > {log}
+        samtools view --threads {params.bowtie2_samtools_threads} -c {output.bam} >> {log}
+        rm {output.bam}tmp.bed
+        """
+
+rule make_bigwigs_no_spikein:
+    input:
+        bam=f"results/aligned_speciesOfInterest/{{sample}}_{str(config['downsample_read_number'])}.bam",
+        bai=f"results/aligned_speciesOfInterest/{{sample}}_{str(config['downsample_read_number'])}.bai",
     output:
         bw=f"results/aligned_downsampled_bigwigs/{{sample}}_{str(config['downsample_read_number'])}.bw",
     params:
@@ -239,12 +236,61 @@ rule make_bigwigs_no_spikein:
         bamCoverage -b {input.bam} -o {output.bw} --effectiveGenomeSize {params.gs} --binSize {params.bs} --numberOfProcessors max --verbose --blackListFileName {params.bl} --centerReads
         """
 
+rule calculate_spikein_scale_factors:
+    input:
+        bam=f"results/aligned_downsampled/{{sample}}_{str(config['downsample_read_number'])}.bam",
+    output:
+        report(f"results/scale_factors/{{sample}}_scaleFactor_{str(config['downsample_read_number'])}.txt"),
+    params:
+        px=config["spike_in_chrom_prefix"],
+    conda:
+        "envs/samtools.yml"
+    envmodules:
+        config["samtools"]
+    shell:
+        """
+        total_counts=$(samtools idxstats {input.bam} | awk -F'\t' '{{sum+=$3;}} END{{print sum;}}')
+        spike_in_counts=$(samtools idxstats {input.bam} | grep {params.px} | awk -F'\t' '{{sum+=$3;}} END{{print sum;}}')
+        spike_in_percentage=$(echo "scale=3; $spike_in_counts/$total_counts*100" | bc )
+        scale_factor=$(echo "scale=8; 1000000/$spike_in_counts" | bc )
+        echo "bam file:  {input.bam}" > {output}_tmp
+        echo "total counts = ${{total_counts}}" >> {output}_tmp
+        echo "spike in read counts = ${{spike_in_counts}}" >> {output}_tmp
+        echo "spike in percentage = ${{spike_in_percentage}}" >> {output}_tmp
+        printf "scale factor = ""%-20.8f\\n" "${{scale_factor}}" >> {output}_tmp
+        mv {output}_tmp {output}
+        """
+
+rule make_bigwigs_with_spikein:
+    input:
+        scale=f"results/scale_factors/{{sample}}_scaleFactor_{str(config['downsample_read_number'])}.txt",
+        bam=f"results/aligned_speciesOfInterest/{{sample}}_{str(config['downsample_read_number'])}.bam",
+    output:
+        bw=f"results/bigwigs_spikein/{{sample}}_{str(config['spike_in_chrom_prefix'])}_{str(config['downsample_read_number'])}.bw"
+    params:
+        gs=config["effective_genome_size"],
+        bs=config["bamCoverage_binSize"],
+        bl=config["blacklist_file"],
+        px=config["spike_in_chrom_prefix"],
+    conda:
+        "envs/deeptools.yml"
+    envmodules:
+        config["deeptools"]
+    log:
+        "results/logs/snakelogs/make_bigwigs_with_spikein_{sample}.log",
+    shell:
+        """
+        bamCoverage --version > {log}
+        scale_factor=$(grep scale {input.scale} | sed 's/scale factor = //g')
+        bamCoverage -b {input.bam} -o {output.bw} --effectiveGenomeSize {params.gs} --binSize {params.bs} --numberOfProcessors max --verbose --blackListFileName {params.bl} --centerReads --scaleFactor ${{scale_factor}}
+        """
+
 rule computeMatrix:
     input:
         unpack(
             lambda wildcards: {
-                "treatment": f"results/aligned_downsampled_bigwigs/{cf.make_all_treatments_table(samples_table_w_merged_suffix).loc[wildcards.sample, 'sample']}_{str(config['downsample_read_number'])}.bw",
-                "control": f"results/aligned_downsampled_bigwigs/{cf.make_all_treatments_table(samples_table_w_merged_suffix).loc[wildcards.sample, 'Control']}_{str(config['downsample_read_number'])}.bw",
+                "treatment": f"results/bigwigs_spikein/{cf.make_all_treatments_table(samples_table_w_merged_suffix).loc[wildcards.sample, 'sample']}_{str(config['spike_in_chrom_prefix'])}_{str(config['downsample_read_number'])}.bw",
+                "control": f"results/bigwigs_spikein/{cf.make_all_treatments_table(samples_table_w_merged_suffix).loc[wildcards.sample, 'Control']}_{str(config['spike_in_chrom_prefix'])}_{str(config['downsample_read_number'])}.bw",
             }
         ),
     output:
