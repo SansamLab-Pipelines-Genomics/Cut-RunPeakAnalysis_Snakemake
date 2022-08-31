@@ -40,6 +40,7 @@ bp_around_peak_center: 5000
 ## before or after region start length for count matrix; integer bp
 beforeRegionStartLength: 3000
 afterRegionStartLength: 3000
+binSize: 100
 
 #################################################################
 ##                     Environment Modules                     ##
