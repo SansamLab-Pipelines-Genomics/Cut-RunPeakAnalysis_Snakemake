@@ -37,6 +37,9 @@ downsample_read_number: 0
 peaks_to_plot_coverage: "resources/HighConfidence_overlapHelaAsynch_qvalueCutoff2_5.bed"
 # bp around peak region center for counting reads
 bp_around_peak_center: 5000
+## before or after region start length for count matrix; integer bp
+beforeRegionStartLength: 3000
+afterRegionStartLength: 3000
 
 #################################################################
 ##                     Environment Modules                     ##
