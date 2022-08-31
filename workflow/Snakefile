@@ -16,7 +16,7 @@ tmstmp = str(now.strftime("%y%m%d_%H%M"))
 
 # this reads the CSV file and sets an index using the values in the sample column.
 samples_table = pd.read_csv(config["samples_csv"]).set_index("sample", drop=False)
-
+samples_lst = samples_table['sample'].to_list()
 
 ##################################################################
 ##                           rules                              ##
@@ -27,11 +27,17 @@ samples_table = pd.read_csv(config["samples_csv"]).set_index("sample", drop=Fals
 rule all:
     input:
         expand(
-            f"results/profile_plots/{{sample}}_{str(config['downsample_read_number'])}.png",
-            sample=cf.make_all_treatments_table(samples_table_w_merged_suffix)[
-                "sample"
-            ].to_list(),
-        ),
+            "results/matrixOfReadsAcrossPeakSummits/{sample}_readCountsAcrossSummits.tab",
+            sample = samples_lst
+        )
+        expand(
+            "results/heatPlotOfReadsAcrossPeakSummits/{sample}_heatPlotAcrossPeakSummits.rds",
+            sample = samples_lst
+        )
+        expand(
+            "results/heatPlotOfReadsAcrossPeakSummits/{sample}_heatPlotAcrossPeakSummits.pdf",
+            sample = samples_lst
+        )
         
         
 ##################################################################
@@ -87,10 +93,10 @@ rule make_coverage_matrix_across_peaks:
 # make heat plots of coverage over reproducible peaks
 rule make_heatplot_of_reproducible_peaks:
     input:
-        mx = "results/matrixOfReadsAcrossPeakSummits/{sample}_" + str(config['macs2_minimum_FDR_cutoff']) + "_" + str(config['minNumberOfSampleOverlaps']) + "_readCountsAcrossSummits.tab",
+        mx = "results/matrixOfReadsAcrossPeakSummits/{sample}_readCountsAcrossSummits.tab",
     output:
-        "results/heatPlotOfReadsAcrossPeakSummits/{sample}_" + str(config['macs2_minimum_FDR_cutoff']) + "_" + str(config['minNumberOfSampleOverlaps']) + "_heatPlotAcrossPeakSummits.rds",
-        "results/heatPlotOfReadsAcrossPeakSummits/{sample}_" + str(config['macs2_minimum_FDR_cutoff']) + "_" + str(config['minNumberOfSampleOverlaps']) + "_heatPlotAcrossPeakSummits.pdf",
+        "results/heatPlotOfReadsAcrossPeakSummits/{sample}_heatPlotAcrossPeakSummits.rds",
+        "results/heatPlotOfReadsAcrossPeakSummits/{sample}_heatPlotAcrossPeakSummits.pdf",
     params:
         config["colorsForHeatPlot"],
         config["heatplotBreaks"],
