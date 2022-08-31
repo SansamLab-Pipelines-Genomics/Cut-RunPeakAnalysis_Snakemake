@@ -29,15 +29,15 @@ rule all:
         expand(
             "results/matrixOfReadsAcrossPeakSummits/{sample}_readCountsAcrossSummits.tab",
             sample = samples_lst
-        )
+        ),
         expand(
             "results/heatPlotOfReadsAcrossPeakSummits/{sample}_heatPlotAcrossPeakSummits.rds",
             sample = samples_lst
-        )
+        ),
         expand(
             "results/heatPlotOfReadsAcrossPeakSummits/{sample}_heatPlotAcrossPeakSummits.pdf",
             sample = samples_lst
-        )
+        ),
         
         
 ##################################################################
