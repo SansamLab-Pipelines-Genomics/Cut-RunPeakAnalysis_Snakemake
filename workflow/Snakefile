@@ -34,10 +34,10 @@ rule all:
             "results/heatPlotOfReadsAcrossPeakSummits/{sample}_heatPlotAcrossPeakSummits.rds",
             sample = samples_lst
         ),
-        expand(
-            "results/heatPlotOfReadsAcrossPeakSummits/{sample}_heatPlotAcrossPeakSummits.pdf",
-            sample = samples_lst
-        ),
+        #expand(
+        #    "results/heatPlotOfReadsAcrossPeakSummits/{sample}_heatPlotAcrossPeakSummits.pdf",
+        #    sample = samples_lst
+        #),
         
         
 ##################################################################
@@ -96,7 +96,7 @@ rule make_heatplot_of_reproducible_peaks:
         mx = "results/matrixOfReadsAcrossPeakSummits/{sample}_readCountsAcrossSummits.tab",
     output:
         "results/heatPlotOfReadsAcrossPeakSummits/{sample}_heatPlotAcrossPeakSummits.rds",
-        "results/heatPlotOfReadsAcrossPeakSummits/{sample}_heatPlotAcrossPeakSummits.pdf",
+        #"results/heatPlotOfReadsAcrossPeakSummits/{sample}_heatPlotAcrossPeakSummits.pdf",
     params:
         config["colorsForHeatPlot"],
         config["heatplotBreaks"],
