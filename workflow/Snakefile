@@ -34,10 +34,10 @@ rule all:
             "results/heatPlotOfReadsAcrossPeakSummits/{sample}_heatPlotAcrossPeakSummits.rds",
             sample = samples_lst
         ),
-        #expand(
-        #    "results/heatPlotOfReadsAcrossPeakSummits/{sample}_heatPlotAcrossPeakSummits.pdf",
-        #    sample = samples_lst
-        #),
+        expand(
+            "results/deeptoolsHeatPlotOfReadsAcrossPeakSummits/{sample}_heatPlotAcrossPeakSummits.pdf",
+            sample = samples_lst
+        ),
         
         
 ##################################################################
@@ -90,6 +90,26 @@ rule make_coverage_matrix_across_peaks:
         computeMatrix reference-point --outFileName {output.gz} -a {params.arl} -b {params.brl} --numberOfProcessors {params.nop} --smartLabels --outFileNameMatrix {output.mx} -S {input.bw} -R {input.bed}
         """
 
+# make deeptools heat plots of coverage over reproducible peaks
+rule make_deeptools_heatplot_of_reproducible_peaks:
+    input:
+        mx = "results/matrixOfReadsAcrossPeakSummits/{sample}_readCountsAcrossSummits.tab",
+    output:
+        "results/deeptoolsHeatPlotOfReadsAcrossPeakSummits/{sample}_heatPlotAcrossPeakSummits.pdf",
+    params:
+        rpl=config["referencePointLabel"],
+        rgl=config["regionsLabel"],
+        xal=config["xAxisLabel"],
+        hmh=config["heatMapHeight"],
+        hmw=config["headMapWidth"]
+    envmodules:
+        config["R"],
+        config["Bioconductor"],
+    shell:
+        """
+        plotHeatmap --matrixFile {input.mx} --outFileName {output} --refPointLabel {params.rpl} --regionsLabel {params.rgl} --xAxisLabel {params.xal} --heatmapHeight {params.hmh} --heatmapWidth {params.hmw}
+        """
+        
 # make heat plots of coverage over reproducible peaks
 rule make_heatplot_of_reproducible_peaks:
     input:
