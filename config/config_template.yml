@@ -14,9 +14,9 @@ heatplotBreaks: "-1,0,1"
 pdfWidth: 2
 pdfHeight: 4
 ## Deeptools Heatplot Options
-referencePointLabel: "Peak midpoint"
-regionsLabel: "Peaks"
-xAxisLabel: "Distance from midpoint (bp)"
+referencePointLabel: "\"Peak midpoint\""
+regionsLabel: "\"Peaks\""
+xAxisLabel: "\"Distance from midpoint (bp)\""
 heatMapHeight: 100
 headMapWidth: 10
 
