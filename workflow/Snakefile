@@ -103,8 +103,7 @@ rule make_deeptools_heatplot_of_reproducible_peaks:
         hmh=config["heatMapHeight"],
         hmw=config["headMapWidth"]
     envmodules:
-        config["R"],
-        config["Bioconductor"],
+        config["deeptools"],
     shell:
         """
         plotHeatmap --matrixFile {input.mx} --outFileName {output} --refPointLabel {params.rpl} --regionsLabel {params.rgl} --xAxisLabel {params.xal} --heatmapHeight {params.hmh} --heatmapWidth {params.hmw}
