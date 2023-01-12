@@ -93,7 +93,7 @@ rule make_coverage_matrix_across_peaks:
 # make deeptools heat plots of coverage over reproducible peaks
 rule make_deeptools_heatplot_of_reproducible_peaks:
     input:
-        mx = "results/matrixOfReadsAcrossPeakSummits/{sample}_readCountsAcrossSummits.tab",
+        mx = "results/matrixOfReadsAcrossPeakSummits/{sample}_readCountsAcrossSummits.gz",
     output:
         "results/deeptoolsHeatPlotOfReadsAcrossPeakSummits/{sample}_heatPlotAcrossPeakSummits.pdf",
     params:
