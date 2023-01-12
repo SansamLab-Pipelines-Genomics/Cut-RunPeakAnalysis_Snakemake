@@ -1,48 +1,38 @@
-# samples filsamples_csv: "config/samples.csv"
 # samples file
 samples_csv: "config/samples.csv"
-# name of experiment
-experimentName: "testExperiment"
-# genome-of-interest (must be dm6, danRer7, danRer10, danRer11, hg19, hg38, mm9, mm10, or mm39)
-genome_of_interest: "hg38"
-# effective genome size
-## for effective genome sizes see: https://deeptools.readthedocs.io/en/develop/content/feature/effectiveGenomeSize.html
-effective_genome_size: 2913022398
-blacklist_file: "resources/hg38-blacklist.v2.bed"
 ## choose an integer for bp
 binSize: 50
-## smooth length
-smoothLength: 150
-## path to blacklist bed file
-blackListFileName: "resources/blackLists/hg38-blacklist.v2.bed"
-## read processing options; all integers
-minFragmentLength: 50
-maxFragmentLength: 1000
-minMappingQuality: 20
 ## number of processors
 numberOfProcessors: 8
 ## before or after region start length for count matrix; integer bp
-beforeRegionStartLength: 3000
-afterRegionStartLength: 3000
+beforeRegionStartLength: 4000
+afterRegionStartLength: 4000
 # heat plot options
 colorsForHeatPlot: "#543005,#f5f5f5,#003c30"
 heatplotBreaks: "-1,0,1"
 ## dimensions of pdf in inches
 pdfWidth: 2
 pdfHeight: 4
+## Deeptools Heatplot Options
+referencePointLabel: "Peak midpoint"
+regionsLabel: "Peaks"
+xAxisLabel: "Distance from midpoint (bp)"
+heatMapHeight: 100
+headMapWidth: 10
+
 #################################################################
 ##                     Environment Modules                     ##
 #################################################################
 # These will be specific to your cluster                        #
 #################################################################
 deeptools: "deeptools/3.4.3"
-bedops: "bedops/2.4.3"
-macs2: "macs2/2.2.7.1"
-fastp: "fastp/0.23.2"
-bwa: "bwa/0.7.15"
-samtools: "samtools/1.14"
-picard: "picard/2.21.2"
-bamtools: "bamtools/2.5.1"
-bedtools: "bedtools/2.30.0"
+#### bedops: "bedops/2.4.3"
+#### macs2: "macs2/2.2.7.1"
+#### fastp: "fastp/0.23.2"
+#### bwa: "bwa/0.7.15"
+#### samtools: "samtools/1.14"
+#### picard: "picard/2.21.2"
+#### bamtools: "bamtools/2.5.1"
+#### bedtools: "bedtools/2.30.0"
 R: "R/4.1.2-mkl"
 Bioconductor: "bioconductor/3.14"
